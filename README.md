@@ -53,12 +53,25 @@ The token is read from the environment and is never stored in the code or repo.
 
 ```bash
 export PRACTICE_API_URL="https://practice.fhsucyber.com"
-export PRACTICE_API_TOKEN="your-token-here"
 ```
 
-(PowerShell: `$env:PRACTICE_API_TOKEN = "your-token-here"`.)
+(In PowerShell, set the URL with `$env:PRACTICE_API_URL = "https://practice.fhsucyber.com"`.)
 
-Need a token? `POST /api/v1/auth/token` with your email and password.
+Need a token? The API's `POST /api/v1/auth/token` endpoint accepts your email
+and password and returns an `api_token`. Use the included helper to prompt for
+credentials without saving them:
+
+```bash
+export PRACTICE_API_URL="https://practice.fhsucyber.com"
+export PRACTICE_API_TOKEN="$(.venv/bin/python get_token.py)"
+```
+
+The password prompt is hidden, and the token is captured in the environment
+rather than printed. To verify configuration without revealing the token:
+
+```bash
+python3 -c 'import os; print("URL set:", bool(os.getenv("PRACTICE_API_URL"))); print("Token set:", bool(os.getenv("PRACTICE_API_TOKEN")))'
+```
 
 ## Quick check (optional)
 
@@ -71,14 +84,17 @@ a 404 case.
 
 ## Register with Claude Code
 
+Run Claude Code from the same terminal where the environment variables are set.
 Use absolute paths (replace `/absolute/path/to` with where you cloned the repo):
 
 ```bash
-claude mcp add practice-hub \
-  --env PRACTICE_API_URL=https://practice.fhsucyber.com \
-  --env PRACTICE_API_TOKEN=your-token \
-  -- /absolute/path/to/MiniProject7Khaleedhossain/.venv/bin/python /absolute/path/to/MiniProject7Khaleedhossain/server.py
+claude mcp add practice-hub -- \
+  /absolute/path/to/MiniProject7Khaleedhossain/.venv/bin/python \
+  /absolute/path/to/MiniProject7Khaleedhossain/server.py
 ```
+
+Do not put the token directly in this command. If the server is already
+registered, remove it before registering again: `claude mcp remove practice-hub`.
 
 Confirm it registered and connected:
 
